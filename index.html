@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page Agnostic Styling -->
+    <link rel="stylesheet" href="main.css">
+    <!-- index.html Specific Styling -->
+    <link rel="stylesheet" href="index.css">
+    <title>MahjongHelper</title>
+</head>
+<body>
+    <div class="top-section">
+        <h2 style="font-size: 3rem; margin-top: 0%; padding-top: 5%; margin-bottom: 0px; padding-bottom: 0px;">Welcome to </h2>
+        <h1 style="margin-top: 0px;">MahjongHelper</h1>
+        <p>A score calculator and tracker for <a href="./rules.html">Chinese (MCR) Mahjong</a></p>
+        <p><b><a href="about.html">About</a></b></p>
+        <br style="display:block; margin-top: 10%;"/>
+        <div id="getStarted" class="flex">
+            <button class="green" style="border-radius: 8px 0px 0px 8px; border-style: solid none solid solid;" onclick="window.location.href = './board.html'">Get Started</button>
+            <button style="background-color: #aaa;  width:5%; border-style: solid none solid none; border-radius: 0px;">or</button>
+            <button class="blue" style="border-radius: 0px 8px 8px 0px; border-style: solid solid solid none;" onclick="clickUploadButton()">Upload a .mjb file</button>
+        </div>
+        <br>
+        <div id="insertMJB" style="display: none; width: 100%">
+            <button class="blue" style="margin-left: 30%; width: 40%;" onclick="upload.click(); handleUpload();">Upload an MJB File</button>
+            <input type="file" id="mjbupload" hidden/>
+            <p style="display: block; clear:both; padding-top: 1%;">or...</p>
+            <textarea id="textinput" placeholder='Paste in a MJB notation here.' type="text" style="width: 90%; height: 250px;"></textarea>
+            <br>
+            <button class="green" style="margin-left: 30%;" onclick="loadMJB()">Load</button>
+            <!-- TODO Add a Try to load Previous Button to load from LocalStorage -->
+        </div>
+        <br style="display:block; content: ''; margin-top: 10%;"/>
+    </div>
+    <script>
+        const emptyBoard = {
+            players: {
+                east: "",
+                south: "",
+                west: "",
+                north: "",
+            },
+            roundNumber: 0,
+            minimumScore: 8,
+            rounds: [
+
+            ]
+        }
+        const roundTemplate = {
+            winningPlayer: "",
+            feedingPlayer: "",
+            hands: [
+                {
+                    player: "",
+                    meldedTiles: [],
+                    concealedTiles: [],
+                }
+            ],
+            numberDiscarded: 0,
+        }
+
+        let _boardState = emptyBoard;
+        const upload = document.getElementById("mjbupload");
+        const input = document.getElementById("insertMJB");
+        const text = document.getElementById("textinput");
+        function clickUploadButton() {
+            let hide = document.getElementById("getStarted");
+            hide.style.display = "none";
+            input.style.display = "inline-block";
+        }
+        function handleUpload() {
+            //todo write file contents to `input` if file uploaded 
+        }
+        function loadMJB() {
+            //todo parse MJB file
+            let val = text.value.trim();
+            let mjb = processMJB(val);
+            let playerdef = mjb[0];
+            let players = {
+                east: playerdef[0].slice(1),
+                south: playerdef[1].slice(1),
+                west: playerdef[2].slice(1),
+                north: playerdef[3].slice(1),
+            }
+            let roundNumber = parseInt(mjb[1]);
+            let minScore = parseInt(mjb[2]);
+            let hands = mjb.slice(3);  
+
+            //todo sort out parsing each round from here
+            let roundCount = -1;
+            let rounds = [/*{
+                winningPlayer: "",
+                feedingPlayer: "",
+                numberDiscarded: 0,
+                hands: []
+            }*/]
+            for (var i = 0; i < hands.length; i++){
+                if (roundCount < roundNumber) {
+                    //todo for now tiles can be strings bc im lazy todo make them not that
+                    let hand = {
+                        player: "",
+                        meldedTiles: "",
+                        concealedTiles: "",
+                    };
+                    let questionMark = false;
+                    if(hands[i][0].startsWith("?")){
+                        rounds[roundCount].numberDiscarded = parseInt(hands[i][0].slice(1));
+                        questionMark = true;
+                    }
+                    if(!questionMark) {
+                        let exclam = false;
+                        if(hands[i][0].startsWith("!")){
+                            exclam = true;
+                            hands[i][0] = hands[i][0].slice(1);
+                        }
+                        hand.player = hands[i][0];
+                        hand.meldedTiles = hands[i][1];
+                        hand.concealedTiles = hands[i][2];
+                        if(exclam){
+                            roundCount++;
+                            if (roundCount >= rounds.length - 1) {
+                                // ! i dont think this code is right
+                                rounds.push(...[{
+                                    winningPlayer: "",
+                                    feedingPlayer: "",
+                                    numberDiscarded: 0,
+                                    hands: []
+                                }]);
+                            }
+                            rounds[roundCount].winningPlayer = hand.player;
+                            rounds[roundCount].feedingPlayer = hands[i][3];
+                        }
+                        rounds[roundCount].hands.push(...[hand]);
+                    }
+                }
+            }
+
+
+            _boardState.players = players;
+            _boardState.roundNumber = roundNumber;
+            _boardState.minimumScore = minScore;
+            _boardState.roundCount = roundCount;
+            _boardState.rounds = rounds;
+            console.log(_boardState)
+            if (typeof(Storage) !== "undefined") {
+                //https://blog.logrocket.com/storing-retrieving-javascript-objects-localstorage/
+                localStorage.boardState = JSON.stringify(_boardState);
+            } else {
+                alert("HTML5 localStorage unavailable.\nPlease use a more modern browser.");
+            }
+            
+            window.location.href = "./board.html"
+        }
+
+        function processMJB(str) {
+            let __ = str.replaceAll("\n","").replaceAll(" ","").split(";");
+            return splitArr(__, ",")
+        }
+
+        function splitArr(str_arr, splitter) {
+            let arr = [];
+            let i = 0;
+            str_arr.forEach(str => {
+                arr[i++] = str.split(splitter);
+            });
+            return arr
+        }
+    </script>
+</body>
+</html>
