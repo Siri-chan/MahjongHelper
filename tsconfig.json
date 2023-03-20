@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["es2021.intl"],
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+  },
+  "files": [
+    "calculator.ts"
+  ]
+}

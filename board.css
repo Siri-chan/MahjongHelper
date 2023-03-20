@@ -42,3 +42,7 @@ input[type=text]:focus {
     outline:none;
     border-style: none none dashed none;
 }
+
+.tiles {
+    font-size: 2rem;
+}

@@ -9,6 +9,7 @@
     <!-- rules.html Specific Styling -->
     <link rel="stylesheet" href="board.css">
     <title>Board | MahjongHelper</title>
+    <script src="calculator.js"></script>
 </head>
 <body>
     <script>
@@ -88,31 +89,33 @@
                 let winningHand;
                 winner = "Winning Player: "+ round.winningPlayer;
                 numDiscards = round.numberDiscarded.toString() + " Discarded Tiles";
-                if (round.feedingPlayer === round.winningPlayer) {
+                let self_drawn = round.feedingPlayer === round.winningPlayer;
+                if (self_drawn) {
                     feedingPlayer = "Self-Drawn";
                 } else {
                     feedingPlayer = "Feeding Player: "+round.feedingPlayer;
                 }
                 _winnerHand = getHandByPlayer(round.hands, round.winningPlayer);
                 //console.log(_winnerHand);
-                winningHand = handToUnicode(_winnerHand);
-                previousRounds.innerHTML += winner + " | " + numDiscards + " | " +  feedingPlayer + "<br />" +
+                winningHand = handToUnicode(_winnerHand, self_drawn);
+                previousRounds.innerHTML += "<span style='font-size: 1.5rem;'>Round "+ (hand_idx + 1) +":" + "</span><br />" + 
+                winner + " | " + numDiscards + " | " +  feedingPlayer + "<br />" +
                 //todo the tiles are kinda small maybe make a class that makes the tiles bigger
                 winningHand + '<button class="seeMore" onclick="showMoreOfHand(' + (hand_idx++).toString() + ')" ><b>See More</b></button>' + 
                 "<br />";
             });
         }
 
-        function handToUnicode(hand) {
+        function handToUnicode(hand, self_drawn) {
             //todo make this pretty
             if (hand) {
-                return "Melded: " + tilesToUnicode(hand.meldedTiles) + " | Concealed: " + tilesToUnicode(hand.concealedTiles);
+                return "<span class='tiles'>Melded: " + tilesToUnicode(hand.meldedTiles) + " | Concealed: " + tilesToUnicode(hand.concealedTiles) + "</span><br /><span>Score: "+calculateScore({meldedTiles: expand(hand.meldedTiles.replaceAll("(", "").replaceAll(")", "")), concealedTiles: expand(hand.concealedTiles.replaceAll("(", "").replaceAll(")", "")), winning_tile: "" /* todo find winning tile */}, self_drawn)+"</span>";
             }
         }
 
         function tilesToUnicode(tiles) {
             let _tiles = tiles.replaceAll("(", "").replaceAll(")", "");
-            _tiles = expandPungandKong(_tiles);
+            _tiles = expand(_tiles);
             _tiles = replaceCharsWithTiles(_tiles);
             return _tiles;
         }
@@ -120,15 +123,20 @@
         function replaceCharsWithTiles(str) {
             // todo i should do this iteratively in a hashmap but im a lazy bones
             return str
-            .replaceAll("1B", "🀐").replaceAll("2B", "🀑").replaceAll("3B", "🀒").replaceAll("4B", "🀓").replaceAll("5B", "🀔").replaceAll("6B", "🀕").replaceAll("7B", "🀖").replaceAll("8B", "🀗").replaceAll("9B", "🀘")
-            .replaceAll("1C", "🀙").replaceAll("2C", "🀚").replaceAll("3C", "🀛").replaceAll("4C", "🀜").replaceAll("5C", "🀝").replaceAll("6C", "🀞").replaceAll("7C", "🀟").replaceAll("8C", "🀠").replaceAll("9C", "🀡") 
-            .replaceAll("1D", "🀇").replaceAll("2D", "🀈").replaceAll("3D", "🀉").replaceAll("4D", "🀊").replaceAll("5D", "🀋").replaceAll("6D", "🀌").replaceAll("7D", "🀍").replaceAll("8D", "🀎").replaceAll("9D", "🀏")
+            .replaceAll("1B", "🀐").replaceAll("2B", "🀑").replaceAll("3B", "🀒").replaceAll("4B", "🀓").replaceAll("5B", "🀔")
+            .replaceAll("6B", "🀕").replaceAll("7B", "🀖").replaceAll("8B", "🀗").replaceAll("9B", "🀘")
+            .replaceAll("1C", "🀙").replaceAll("2C", "🀚").replaceAll("3C", "🀛").replaceAll("4C", "🀜").replaceAll("5C", "🀝")
+            .replaceAll("6C", "🀞").replaceAll("7C", "🀟").replaceAll("8C", "🀠").replaceAll("9C", "🀡") 
+            .replaceAll("1D", "🀇").replaceAll("2D", "🀈").replaceAll("3D", "🀉").replaceAll("4D", "🀊").replaceAll("5D", "🀋")
+            .replaceAll("6D", "🀌").replaceAll("7D", "🀍").replaceAll("8D", "🀎").replaceAll("9D", "🀏")
             .replaceAll("EW", "🀀").replaceAll("SW", "🀁").replaceAll("WW", "🀂").replaceAll("NW", "🀃")
             .replaceAll("RD", "🀄").replaceAll("GD", "🀅").replaceAll("WD", "🀆")
-            .replaceAll("1F", "🀢").replaceAll("2F", "🀣").replaceAll("3F", "🀤").replaceAll("4F", "🀥").replaceAll("1S", "🀦").replaceAll("2S", "🀧").replaceAll("3S", "🀨").replaceAll("4S", "🀩");
+            .replaceAll("1F", "🀢").replaceAll("2F", "🀣").replaceAll("3F", "🀤").replaceAll("4F", "🀥")
+            .replaceAll("1S", "🀦").replaceAll("2S", "🀧").replaceAll("3S", "🀨").replaceAll("4S", "🀩");
         }
 
-        function expandPungandKong(tiles) {
+        function expand(tiles) {
+
             split = tiles.split("");
             let arr = [];
             for (let i = 0; i < split.length; i++) {
@@ -160,10 +168,10 @@
         }
 
         function setCurrentPositions(){
-            let east_is = windStrings[board.roundNumber % 4];
-            let south_is = windStrings[(board.roundNumber + 1) % 4];
-            let west_is = windStrings[(board.roundNumber + 2) % 4];            
-            let north_is = windStrings[(board.roundNumber + 3) % 4];
+            let east_is = windStrings[((board.roundNumber + + Math.floor(board.roundNumber / 4)) % 4)];
+            let south_is = windStrings[((board.roundNumber + 1 + + Math.floor(board.roundNumber / 4)) % 4)];
+            let west_is = windStrings[((board.roundNumber + 2 + + Math.floor(board.roundNumber / 4)) % 4)];            
+            let north_is = windStrings[((board.roundNumber + 3 + + Math.floor(board.roundNumber / 4)) % 4)];
             let currentPositions_div = document.getElementById("currentPositions");
             currentPositions_div.innerHTML = 
                 board.players.east + ": " + east_is + "<br />" +
