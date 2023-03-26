@@ -43,7 +43,9 @@ E<name>,S<name>,W<name>,N<name>;/*representing the initial winds of the players,
 /* Repeat from here for each round played */
 !<name>,<exposed tiles>,<concealed tiles>,<feeding player name (use self name if self-drawn)>; /*description of the winning hand*/
 <name>,<exposed tiles>,<concealed tiles>; /* optionally, other players hands for that game */
-?<number of discarded tiles, optionally>;
++<winning tile: should be multiple if redrawn from a kkong or flower>;
+@<number of tiles remaining in the wall>;
+?<number of discarded tiles>;
 ```
 
 Tiles should be Represented as such:
@@ -72,19 +74,28 @@ EuwuSiri,SMahjongBoyXD,WJamborius,NTheJuicer;4;0;
 uwuSiri,1F(6D7D8D)(4C5C6C),[8C](7B8B9B)3B;
 MahjongBoyXD,2F1S[9D][SW](5B6B7B),1B2B5C5C;
 Jamborius,2S{2C},(1D2D3D)(7D8D9D)[9B]5C;/* Was very close to a W */
++1F6B
+@11
 ?74;
 !MahjongBoyXD,2S(4D5D6D)(5C6C7C)(6D7D8D),7B7B[2D],MahjongBoyXD;
 /* Beacuse I am manually generating this, I have decided to cut out other people's hands from now to save time */
++7B;
+@56;
 ?30;
 !TheJuicer,1S2S(4D5D6D)(7D8D9D)[3D],[7B]6D6D,uwuSiri;
++5C;
+@30;
 ?53;
-!MahjongBoyXD,1F1S2S[9C][2B](3D4D5D),4C4C(7B8B9B),uwuSiri;?48;
+!MahjongBoyXD,1F1S2S[9C][2B](3D4D5D),4C4C(7B8B9B),uwuSiri;
++4C
+@37
+?48;
 ```
 
 or minified:
 
 ```mjb
-EuwuSiri,SMahjongBoyXD,WJamborius,NTheJuicer;4;0;!TheJuicer,3F(3B4B5B)(5B6B7B),(6D7D8D)(6C7C8C)9C9C,TheJuicer;uwuSiri,1F(6D7D8D)(4C5C6C),[8C](7B8B9B)3B;MahjongBoyXD,2F1S[9D][SW](5B6B7B),1B2B5C5C;Jamborius,2S{2C},(1D2D3D)(7D8D9D)[9B]5C;?74;!MahjongBoyXD,2S(4D5D6D)(5C6C7C)(6D7D8D),7B7B[2D],MahjongBoyXD;?30;!TheJuicer,1S2S(4D5D6D)(7D8D9D)[3D],[7B]6D6D,uwuSiri;?53;!MahjongBoyXD,1F1S2S[9C][2B](3D4D5D),4C4C(7B8B9B),uwuSiri;?48;
+EuwuSiri,SMahjongBoyXD,WJamborius,NTheJuicer;4;0;!TheJuicer,3F(3B4B5B)(5B6B7B),(6D7D8D)(6C7C8C)9C9C,TheJuicer;uwuSiri,1F(6D7D8D)(4C5C6C),[8C](7B8B9B)3B;MahjongBoyXD,2F1S[9D][SW](5B6B7B),1B2B5C5C;Jamborius,2S{2C},(1D2D3D)(7D8D9D)[9B]5C;+1F6B;@11;?74;!MahjongBoyXD,2S(4D5D6D)(5C6C7C)(6D7D8D),7B7B[2D],MahjongBoyXD;+7B@56;?30;!TheJuicer,1S2S(4D5D6D)(7D8D9D)[3D],[7B]6D6D,uwuSiri;+5C;@30;?53;!MahjongBoyXD,1F1S2S[9C][2B](3D4D5D),4C4C(7B8B9B),uwuSiri;+4C;@37?48;
 ```
 
 While this isn't the most serialisable format, it should be relatively human readable, which is great for debugging, and potentially porting to other programs.
