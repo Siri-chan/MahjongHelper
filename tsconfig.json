@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2021.intl"],
+    "lib": ["es2021.intl", "es2021"],
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,

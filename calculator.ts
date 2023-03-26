@@ -67,18 +67,43 @@ function calculateScore(hand: Hand, self_drawn: boolean): string {
     let two_dragon_pungs = twoDragonPungs(dragon_pung);
 
     //Eight Point Rules:
+    let mixed_straight = mixedStraight();
+    let reversible_tiles = reversibleTiles(one_voided_suit);
+    let mixed_triple_chow = mixedTripleChow(mixed_double_chow);
+    let mixed_shifted_pungs = mixedShiftedPungs();
+    let two_concealed_kongs = twoConcealedKongs(two_concealed_pungs, concealed_kong);
+    let last_tile_draw = lastTileDraw(self_drawn);
+    let last_tile_claim = lastTileClaim();
+    let out_with_replacement_tile = outWithReplacementTile(self_drawn);
+    let robbing_the_kong = robbingTheKong(last_of_its_kind);
+    
+    //Twelve Point Rules:
+    let lesser_honors_and_knitted_tiles = lesserHonorsAndKnittedTiles(concealed_hand, all_types);
+    let knitted_straight = knittedStraight();
+    let upper_four = upperFour(no_honor_tiles);
+    let lower_four = lowerFour(no_honor_tiles);
+    let big_three_winds = bigThreeWinds(pung_of_terminals_or_honors);
+
 
 
     //todo im missing a lot of hands 
     let all_terminals_and_honors = allTerminalsAndHonors(_hand);
     let thirteen_orphans = thirteenOrphans(hand, _concealed_hand, all_terminals_and_honors, no_melded);
     let seven_shifted_pairs = sevenShiftedPairs(hand);
+    // todo Chicken Hand is 8 points but is easiest to calculate last, as just if no other points
+    // todo score will need to be calculated here.
+    let chicken_hand = score == 0;
 
-    
+
+    if ((big_three_winds && (() => {/* TODO CHECK FOR NON-WIND PUNG HERE */ return true;}))) {pung_of_terminals_or_honors = false}
+    if (lesserHonorsAndKnittedTiles) { concealed_hand = false; all_types = false; }
+    if (robbing_the_kong) { last_of_its_kind = false; }
+    if (last_tile_draw || out_with_replacement_tile) { self_drawn = false; }
+    if (two_concealed_kongs) { concealed_kong = false; two_concealed_pungs = false; }
     if (two_dragon_pungs) { dragon_pung = false }
-    if (half_flush) { one_voided_suit = false }
+    if (half_flush || reversible_tiles) { one_voided_suit = false }
     if (melded_hand) { pair_wait = false }
-    if (all_chows || all_simples) { no_honor_tiles = false; }
+    if (all_chows || all_simples || upper_four || lower_four) { no_honor_tiles = false; }
     if (two_melded_kongs) { melded_kong = false; }
     if (thirteen_orphans) { all_terminals_and_honors = false; no_melded = false; }
 
@@ -90,6 +115,7 @@ function doubleChows():number {
     // * returns 1 for a pure double chow (two identical chows in the same suit) 
     // * and 2 for a mixed double chow (two chows of the same numbers but in different suits)
     // * otherwise returns 0
+    return 0;
 }
 
 function shortStraight(_hand: string[]):boolean {
@@ -196,28 +222,34 @@ function shortStraight(_hand: string[]):boolean {
 
 function twoTerminalChows():boolean {
     //todo this should look for a set of two terminal chows (hand with any two chows containing terminals)
+    return false;
 }
 
 function pungOfTerminalsOrHonors():boolean {
     //todo this should check for a pung of terminal tiles or honor tiles
+    return false;
 }
 
 function meldedKong():boolean {
     //todo this should check for a melded kong
+    return false;
 }
 
 function oneVoidedSuit():boolean {
     //todo should check for a suit with no tiles in hand
+    return false;
 }
 
 function noHonorTiles():boolean {
     //todo check if hand contains honor tiles
+    return false;
 }
 
 // self-drawn is passed in
 
 function flowers():number {
     //todo this needs to count flower/season count in hand  
+    return 0;
 }
 
 function edgeWait(hand:Hand): boolean {
@@ -230,24 +262,29 @@ function edgeWait(hand:Hand): boolean {
 
 function closedWait(hand:Hand): boolean {
     //todo this needs to check if the winning tile forms the middle of a chow
+    return false;
 }
 
 function pairWait(hand:Hand): boolean {
     //todo this needs to check if the winning tile forms a pair
+    return false;
 }
 
 //Two Point
 
 function dragonPung(): boolean {
     //todo check if pung or kong of dragons
+    return false;
 }
 
 function prevalentWind(): boolean {
     //todo check if pung or kong of prevalent wind
+    return false;
 }
 
 function seatWind(): boolean {
     //todo check if pung or kong of player wind
+    return false;
 }
 
 function allChows(no_honor_tiles:boolean): boolean {
@@ -257,18 +294,22 @@ function allChows(no_honor_tiles:boolean): boolean {
 
 function tileHog():boolean {
     //todo check if uses all 4 of a tile, without a kong
+    return false;
 }
 
 function doublePung(): boolean {
     //todo check if two pung/kong of the same number, but different suit
+    return false;
 }
 
 function twoConcealedPungs(): boolean {
     //todo check for two concealed pungs
+    return false;
 }
 
 function concealedKong(): boolean {
     //todo check for a concealed kong
+    return false;
 }
 
 function allSimples(no_honor_tiles:boolean): boolean {
@@ -279,6 +320,7 @@ function allSimples(no_honor_tiles:boolean): boolean {
 // Four Point Hands:
 function outsideHand():boolean {
     //todo calculate if each set contains honor/terminal
+    return false;
 }
 
 function twoMeldedKongs(melded_kong:boolean): boolean {
@@ -290,10 +332,12 @@ function twoMeldedKongs(melded_kong:boolean): boolean {
 function lastOfItsKind():boolean {
     //todo unsure how to do this, 
     // should be true when player wins by drawing a tile that has all 3 other versions of the same tile public.
+    return false;
 }
 
 function allPungs(): boolean {
     // todo check for 4 pungs/kongs and a pair
+    return false;
 }
 
 function halfFlush(one_voided_suit:boolean): boolean {
@@ -303,10 +347,12 @@ function halfFlush(one_voided_suit:boolean): boolean {
 
 function mixedShiftedChows(): boolean {
     //todo three chows in the three suits, all shifted up by one
+    return false;
 }
 
 function allTypes(): boolean {
     //todo hand contains a bamboo, character, circle, dragon and wind tile
+    return false;
 }
 
 function meldedHand(pair_wait:boolean): boolean {
@@ -319,8 +365,81 @@ function twoDragonPungs(dragon_pung:boolean):boolean {
     //todo check if there is a second dragon pung
 }
 
+function mixedStraight():boolean {
+    //todo check for a chow of 123, 456, 789 with one chow in each suit
+    return false;
+}
 
+function reversibleTiles(one_voided_suit:boolean):boolean {
+    if (!one_voided_suit) { return false; }
+    //todo check if there are non-reversable tiles in hand
+}
 
+function mixedTripleChow(mixed_double_chow:boolean):boolean {
+    if (!mixed_double_chow) { return false; }
+    //todo check for three chows of the same numbers, one in each suit
+}
+
+function mixedShiftedPungs() {
+    //todo check for an ascending set of three pungs, one in each suit
+    return false;
+}
+
+function twoConcealedKongs(two_concealed_pungs:boolean, concealed_kong:boolean) :boolean {
+    if (!(twoConcealedPungs || concealed_kong)) { return false; }
+    //todo check for two concealed kongs
+}
+
+function lastTileDraw (self_drawn:boolean):boolean {
+    if (!self_drawn) { return false; }
+    //todo figue out how to check this
+}
+
+function lastTileClaim ():boolean {
+    //todo fgure out how to know if won by last tile discard
+    return false;
+}
+
+function outWithReplacementTile (self_drawn:boolean):boolean {
+    if (!self_drawn) { return false; }
+    //todo figure out how to know if player won by drawing a replacement tile after points
+}
+
+function robbingTheKong(last_of_its_kind:boolean):boolean {
+    if (!lastOfItsKind) { return false; }
+    //todo figureout if the kong had been robbed
+}
+
+// ! Bool delcs end here
+
+function lesserHonorsAndKnittedTiles(concealed_hand:boolean, all_types:boolean):boolean {
+    if (!(concealed_hand && all_types)) { return false; }
+    // TODO Check if the hand is entirely composed of unpaired honors and single tiles from different knitted sequences; the player can win without the standard 4 triples and a pair in this case.
+    // Knitted Sequences are 1,4,7; 2,5,8 and 3,6,9
+}
+
+function knittedStraight(): boolean {
+    // TODO Check for 1,4,7; 2,5,8 and 3,6,9 in the three different suits. These count as 3 chows if you get them in a hand.
+    return false;
+}
+
+function upperFour(no_honor_tiles: boolean):boolean {
+    if (!no_honor_tiles) { return false; }
+    //TODO check if hand only has suit tiles of value 6 or greater.
+}
+
+function lowerFour(no_honor_tiles: boolean):boolean {
+    if (!no_honor_tiles) { return false; }
+    //TODO check if hand only has suit tiles of value 4 or less.
+}
+
+function bigThreeWinds(pung_of_terminals_or_honors:boolean):boolean {
+    if (!pung_of_terminals_or_honors) {
+        // ! This specific one is not incompatible if hand also includes a non-wind pung
+        return false;
+    }
+    // todo check for pung/kongs of 3/4 of the winds.
+}
 
 
 
@@ -370,7 +489,7 @@ function allTerminalsAndHonors(_hand:string[]):boolean {
             _hand.includes("2D") || _hand.includes("3D") || 
             _hand.includes("4D") || _hand.includes("5D") || 
             _hand.includes("6D") || _hand.includes("7D") || 
-            _hand.includes("8D") || 
+            _hand.includes("8D")
             )
 }
 
@@ -392,7 +511,8 @@ function thirteenOrphans(hand:Hand, _hand:string[], all_terminals_or_honors:bool
 }
 
 function sevenShiftedPairs(hand:Hand): boolean {
-
+    //todo detect seven shifted pairs
+    return false;
 }
 
 function hasMelded(hand:Hand): boolean {
