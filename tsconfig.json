@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2021.intl", "es2021"],
+    "lib": ["es2021.intl", "es2021", "dom"],
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
@@ -8,6 +8,7 @@
     "sourceMap": true,
   },
   "files": [
-    "calculator.ts"
+    "calculator.ts",
+    "board.ts"
   ]
 }
