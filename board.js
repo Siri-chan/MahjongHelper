@@ -1,14 +1,3 @@
-var emptyBoard = {
-    players: {
-        east: "",
-        south: "",
-        west: "",
-        north: "",
-    },
-    roundNumber: 0,
-    minimumScore: 8,
-    rounds: []
-};
 var emptyRound = {
     winningPlayer: "",
     feedingPlayer: "",

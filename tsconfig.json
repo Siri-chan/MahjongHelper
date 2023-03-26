@@ -9,6 +9,7 @@
   },
   "files": [
     "calculator.ts",
-    "board.ts"
+    "board.ts",
+    "index.ts"
   ]
 }

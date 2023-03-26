@@ -24,20 +24,6 @@ interface Hand {
     winningTile: string
 }
 
-const emptyBoard: Board = {
-    players: {
-        east: "",
-        south: "",
-        west: "",
-        north: "",
-    },
-    roundNumber: 0,
-    minimumScore: 8,
-    rounds: [
-
-    ]
-};
-
 const emptyRound:Round = {
     winningPlayer: "",
     feedingPlayer: "",
