@@ -26,7 +26,7 @@ function handleUpload() {
 }
 function loadMJB() {
     //todo parse MJB file
-    let val = text.value.trim();
+    let val = text.value.trim().replaceAll("/\/\*[^*]*\*+(?:[^/*][^*]*\*+)*\//gm", ""); //regexr.com/7desn
     let mjb = processMJB(val);
     let playerdef = mjb[0];
     let players = {

@@ -16,7 +16,7 @@ MahjongHelper is a web-app designed to calculate the scores of hands for **Chine
 
 ### Possible Features
 
-- [ ] Support for Japanese Mahjong rules as well as Chinese
+- [ ] Support for Japanese Mahjong rules as well as MCR
 
 ### Non-Features
 
@@ -43,7 +43,7 @@ E<name>,S<name>,W<name>,N<name>;/*representing the initial winds of the players,
 /* Repeat from here for each round played */
 !<name>,<exposed tiles>,<concealed tiles>,<feeding player name (use self name if self-drawn)>; /*description of the winning hand*/
 <name>,<exposed tiles>,<concealed tiles>; /* optionally, other players hands for that game */
-+<winning tile: should be multiple if redrawn from a kkong or flower>;
++<winning tile: should be multiple if redrawn from a kong or flower>;
 @<number of tiles remaining in the wall>;
 ?<number of discarded tiles>;
 ```
